@@ -1,7 +1,8 @@
 streamlit
 pandas
+joblib
 numpy
+matplotlib
 scikit-learn
 hdbscan
-matplotlib
-joblib
+reportlab

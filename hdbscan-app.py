@@ -7,6 +7,9 @@ from sklearn.preprocessing import StandardScaler
 from sklearn.decomposition import PCA
 from sklearn.metrics import davies_bouldin_score, calinski_harabasz_score
 import hdbscan
+from io import BytesIO
+from reportlab.lib.pagesizes import letter
+from reportlab.pdfgen import canvas
 
 # Load pre-trained components
 scaler = joblib.load('scaler.pkl')
@@ -65,10 +68,54 @@ if uploaded_file is not None:
         plt.ylabel("PCA Component 2")
         st.pyplot(plt)
         
+        # Save the visualization to an image buffer for PDF export
+        image_buffer = BytesIO()
+        plt.savefig(image_buffer, format='png')
+        image_buffer.seek(0)
+
         # Display cluster stability scores
         stability_scores = hdbscan_clusterer.probabilities_
         df['Stability_Score'] = stability_scores
         st.write("Cluster Stability Scores")
         st.write(df[['Cluster', 'Stability_Score']])
+
+        # Export to PDF
+        def create_pdf_report(data, image_buffer):
+            pdf_buffer = BytesIO()
+            c = canvas.Canvas(pdf_buffer, pagesize=letter)
+            c.drawString(30, 750, "Clustered Data Report")
+            c.drawString(30, 730, "Summary, Cluster Stability Scores, and Visualization")
+
+            # Add the clustering summary table
+            c.drawString(30, 710, "Clustering Summary:")
+            y_position = 690
+            for cluster, count in data['Cluster'].value_counts().items():
+                c.drawString(30, y_position, f"Cluster {cluster}: {count} data points")
+                y_position -= 15
+
+            # Add clustering metrics if available
+            if len(set(valid_clusters)) > 1:
+                c.drawString(30, y_position, f"Davies-Bouldin Index: {db_index}")
+                y_position -= 15
+                c.drawString(30, y_position, f"Calinski-Harabasz Index: {ch_index}")
+                y_position -= 20
+
+            # Add the scatter plot to the PDF
+            c.drawImage(image_buffer, 30, y_position - 200, width=500, height=200)
+
+            # Save PDF
+            c.save()
+            pdf_buffer.seek(0)
+            return pdf_buffer
+
+        pdf_report = create_pdf_report(df, image_buffer)
+
+        # Add a download button for the PDF report
+        st.download_button(
+            label="Download Clustered Data Report (PDF)",
+            data=pdf_report,
+            file_name="clustered_report.pdf",
+            mime="application/pdf"
+        )
     else:
         st.write("The uploaded dataset is missing one or more required columns.")
