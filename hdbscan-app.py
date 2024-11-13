@@ -10,6 +10,7 @@ import hdbscan
 from io import BytesIO
 from reportlab.lib.pagesizes import letter
 from reportlab.pdfgen import canvas
+import tempfile
 
 # Load pre-trained components
 scaler = joblib.load('scaler.pkl')
@@ -68,10 +69,10 @@ if uploaded_file is not None:
         plt.ylabel("PCA Component 2")
         st.pyplot(plt)
         
-        # Save the visualization to an image buffer for PDF export
-        image_buffer = BytesIO()
-        plt.savefig(image_buffer, format='png')
-        image_buffer.seek(0)
+        # Save the visualization to a temporary file for PDF export
+        temp_image_file = tempfile.NamedTemporaryFile(delete=False, suffix=".png")
+        plt.savefig(temp_image_file.name)
+        temp_image_file.close()
 
         # Display cluster stability scores
         stability_scores = hdbscan_clusterer.probabilities_
@@ -80,7 +81,7 @@ if uploaded_file is not None:
         st.write(df[['Cluster', 'Stability_Score']])
 
         # Export to PDF
-        def create_pdf_report(data, image_buffer):
+        def create_pdf_report(data, image_path):
             pdf_buffer = BytesIO()
             c = canvas.Canvas(pdf_buffer, pagesize=letter)
             c.drawString(30, 750, "Clustered Data Report")
@@ -101,14 +102,14 @@ if uploaded_file is not None:
                 y_position -= 20
 
             # Add the scatter plot to the PDF
-            c.drawImage(image_buffer, 30, y_position - 200, width=500, height=200)
+            c.drawImage(image_path, 30, y_position - 200, width=500, height=200)
 
             # Save PDF
             c.save()
             pdf_buffer.seek(0)
             return pdf_buffer
 
-        pdf_report = create_pdf_report(df, image_buffer)
+        pdf_report = create_pdf_report(df, temp_image_file.name)
 
         # Add a download button for the PDF report
         st.download_button(
