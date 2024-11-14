@@ -5,3 +5,5 @@ tensorflow
 joblib
 hdbscan
 scikit-learn
+gdown
+matplotlib
