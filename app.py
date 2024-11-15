@@ -8,8 +8,8 @@ from sklearn.decomposition import PCA
 
 # Load Models
 hdbscan_model = joblib.load(open("hdbscan_model.pkl", "rb"))
-pca_model = joblib.load(open("pca_model.pkl", "rb"))
-mlp_model = tf.keras.models.load_model("mlp_model.h5")
+pca_model = joblib.load(open("pca.pkl", "rb"))
+mlp_model = tf.keras.models.load_model("mlp_electrification_classifier.h5")
 
 # Retrieve Dataset from Google Drive
 file_id = '1tA8MgnqH8pHQep6XGUoc1Wp9zy4RRzS0'
