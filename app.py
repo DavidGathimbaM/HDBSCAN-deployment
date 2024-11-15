@@ -1,14 +1,14 @@
 import streamlit as st
 import pandas as pd
 import gdown
-import pickle
+import joblib
 import tensorflow as tf
 import matplotlib.pyplot as plt
 from sklearn.decomposition import PCA
 
 # Load Models
-hdbscan_model = pickle.load(open("hdbscan_model.pkl", "rb"))
-pca_model = pickle.load(open("pca_model.pkl", "rb"))
+hdbscan_model = joblib.load(open("hdbscan_model.pkl", "rb"))
+pca_model = joblib.load(open("pca_model.pkl", "rb"))
 mlp_model = tf.keras.models.load_model("mlp_model.h5")
 
 # Retrieve Dataset from Google Drive
