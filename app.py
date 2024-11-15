@@ -24,10 +24,18 @@ def download_and_load_data(url):
 
 @st.cache_data
 def apply_models(df):
-    # Preprocess: Select required numeric columns
+    # Preprocess: Select required numeric columns and one-hot encode Income_Distribution
+    income_columns = [col for col in scaler.feature_names_in_ if col.startswith("Income_")]
     numeric_columns = ['Pop_Density_2020', 'Wind_Speed', 'Latitude', 'Longitude', 'Grid_Value']
-    clustering_data = df[numeric_columns]
-    
+
+    # Ensure all expected columns are present
+    for col in income_columns:
+        if col not in df.columns:
+            df[col] = 0  # Add missing columns with default value 0
+
+    # Combine numeric and one-hot encoded columns
+    clustering_data = df[numeric_columns + income_columns]
+
     # Scale the numeric data using the pre-trained scaler
     clustering_data_scaled = scaler.transform(clustering_data)
 
