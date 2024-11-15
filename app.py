@@ -43,5 +43,3 @@ if prediction[0] > 0.5:  # Adjust threshold as needed
     st.write("This area has electricity power.")
 else:
     st.write("This area does not have electricity power. Wind microgrid might be viable.")
-
-# sorry, but the app was to collect data and use the hdbscan and mlp to interpret or rather filter out. Cant the mlp and Hdbscan models read the data out
