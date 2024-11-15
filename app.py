@@ -1,15 +1,4 @@
 import streamlit as st
-import gdown
-import pandas as pd
-import joblib
-import matplotlib.pyplot as plt
-
-# Set Google Drive file ID for the CSV file
-file_id = '1tA8MgnqH8pHQep6XGUoc1Wp9zy4RRzS0'
-download_url = f'https://drive.google.com/uc?id={file_id}'
-output_file = 'data.csv'
-
-import streamlit as st
 import pandas as pd
 import gdown
 import pickle
